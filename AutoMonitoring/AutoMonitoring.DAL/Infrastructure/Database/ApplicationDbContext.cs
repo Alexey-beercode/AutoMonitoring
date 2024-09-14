@@ -1,4 +1,5 @@
-﻿using AutoMonitoring.Domain.Entities.Implementations;
+﻿using AutoMonitoring.DAL.Infrastructure.Database.Configuration;
+using AutoMonitoring.Domain.Entities.Implementations;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoMonitoring.DAL.Infrastructure.Database;
@@ -16,5 +17,10 @@ public class ApplicationDbContext:DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfiguration(new RoleConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+        modelBuilder.ApplyConfiguration(new UserSessionConfiguration());
     }
 }

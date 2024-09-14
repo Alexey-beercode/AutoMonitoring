@@ -1,4 +1,5 @@
-﻿using AutoMonitoring.DAL.Infrastructure.Database.Configuration;
+﻿using AutoMonitoring.DAL.Extensions;
+using AutoMonitoring.DAL.Infrastructure.Database.Configuration;
 using AutoMonitoring.Domain.Entities.Implementations;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,5 +23,6 @@ public class ApplicationDbContext:DbContext
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
         modelBuilder.ApplyConfiguration(new UserSessionConfiguration());
+        modelBuilder.SeedUsersRolesData();
     }
 }

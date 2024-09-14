@@ -6,4 +6,18 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="13.0.1" />
+      <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
+      <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="DTOs\Implementations\BaseDTOs\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AutoMonitoring.Domain\AutoMonitoring.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

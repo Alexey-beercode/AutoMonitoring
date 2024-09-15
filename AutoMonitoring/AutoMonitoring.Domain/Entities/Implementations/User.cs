@@ -5,5 +5,5 @@ namespace AutoMonitoring.Domain.Entities.Implementations;
 public class User:BaseEntity
 {
     public string Login { get; set; }
-    public string PasswordHash { get; set; }
+    public string Password { get; set; }
 }

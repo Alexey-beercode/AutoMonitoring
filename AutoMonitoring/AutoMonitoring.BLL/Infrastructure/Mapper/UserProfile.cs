@@ -11,7 +11,7 @@ public class UserProfile:Profile
     {
         // Mapping from UserDTO to User
         CreateMap<UserDTO, User>()
-            .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+            .ForMember(dest => dest.Password, opt => opt.Ignore())
             .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
 
         // Mapping from User to UserResponseDTO

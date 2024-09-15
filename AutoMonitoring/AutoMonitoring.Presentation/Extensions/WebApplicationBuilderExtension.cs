@@ -127,7 +127,6 @@ public static class WebApplicationBuilderExtension
         builder
             .Services.AddFluentValidationAutoValidation()
             .AddFluentValidationClientsideAdapters();
-        builder.Services.AddValidatorsFromAssemblyContaining<TokenDTOValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<UserDTOValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<UserRoleDTOValidator>();
     }

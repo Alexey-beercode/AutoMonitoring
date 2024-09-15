@@ -21,7 +21,7 @@ public static class ModelBuilderExtension
             Id = adminId,
             Login = "Admin",
             IsDeleted = false,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
+            Password = BCrypt.Net.BCrypt.HashPassword(adminPassword),
         };
         modelBuilder.Entity<Role>().HasData(adminRole);
         modelBuilder.Entity<User>().HasData(adminUser);

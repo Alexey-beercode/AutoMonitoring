@@ -1,4 +1,4 @@
-﻿using EventMaster.BLL.DTOs.Responses.Role;
+﻿using AutoMonitoring.BLL.DTOs.Implementations.Responses.Role;
 
 namespace AutoMonitoring.BLL.Services.Interfaces;
 

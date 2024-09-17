@@ -1,9 +1,9 @@
-using EventMaster.BLL.DTOs.Implementations.Requests.User;
+using AutoMonitoring.BLL.DTOs.Implementations.Requests.User;
 using FluentValidation;
 
 namespace EventMaster.BLL.Infrastructure.Validators;
 
-public class UserDTOValidator : AbstractValidator<UserDTO>
+public class UserDTOValidator : AbstractValidator<LoginDTO>
 {
     public UserDTOValidator()
     {

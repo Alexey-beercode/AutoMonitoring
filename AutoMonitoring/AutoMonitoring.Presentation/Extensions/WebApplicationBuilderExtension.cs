@@ -52,6 +52,7 @@ public static class WebApplicationBuilderExtension
             );
         });
     }
+    
     public static void AddMapping(this WebApplicationBuilder builder)
     {
         builder.Services.AddAutoMapper(
@@ -100,6 +101,7 @@ public static class WebApplicationBuilderExtension
             });
         });
     }
+    
     public static void AddDatabase(this WebApplicationBuilder builder)
     {
         string? connectionString = builder.Configuration.GetConnectionString("ConnectionString");
@@ -128,11 +130,5 @@ public static class WebApplicationBuilderExtension
             .Services.AddFluentValidationAutoValidation()
             .AddFluentValidationClientsideAdapters();
         builder.Services.AddValidatorsFromAssemblyContaining<UserDTOValidator>();
-        builder.Services.AddValidatorsFromAssemblyContaining<UserRoleDTOValidator>();
-    }
-
-    public static void AddCache(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddMemoryCache();
     }
 }

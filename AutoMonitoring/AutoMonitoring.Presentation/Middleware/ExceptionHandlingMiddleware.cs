@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Security.Authentication;
-using EventMaster.BLL.Exceptions;
+using AutoMonitoring.BLL.Exceptions;
 using Newtonsoft.Json;
 
 namespace AutoMonitoring.Middleware;

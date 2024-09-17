@@ -1,4 +1,4 @@
-namespace EventMaster.BLL.DTOs.Responses.Role;
+namespace AutoMonitoring.BLL.DTOs.Implementations.Responses.Role;
 
 public class RoleDTO
 {

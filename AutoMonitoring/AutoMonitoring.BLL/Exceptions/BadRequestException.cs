@@ -1,4 +1,4 @@
-namespace EventMaster.BLL.Exceptions;
+namespace AutoMonitoring.BLL.Exceptions;
 
 public class BadRequestException:Exception
 {

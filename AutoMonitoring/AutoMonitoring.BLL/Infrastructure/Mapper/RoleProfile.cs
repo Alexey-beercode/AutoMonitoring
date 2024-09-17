@@ -1,6 +1,6 @@
 using AutoMapper;
+using AutoMonitoring.BLL.DTOs.Implementations.Responses.Role;
 using AutoMonitoring.Domain.Entities.Implementations;
-using EventMaster.BLL.DTOs.Responses.Role;
 
 namespace AutoMonitoring.BLL.Infrastructure.Mapper;
 

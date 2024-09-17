@@ -1,6 +1,4 @@
-using EventMaster.BLL.DTOs.Responses.Role;
-
-namespace EventMaster.BLL.DTOs.Responses.User;
+namespace AutoMonitoring.BLL.DTOs.Implementations.Responses.User;
 
 public class UserResponseDTO
 {

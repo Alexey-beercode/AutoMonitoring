@@ -13,10 +13,15 @@ public class UserSessionRepository:BaseRepository<UserSession>,IUserSessionRepos
         _dbContext = dbContext;
     }
 
-    public async Task<UserSession> GetActiveSessionAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<UserSession> GetActiveSessionByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.UserSessions
             .FirstOrDefaultAsync(s => s.UserId == userId && s.IsActive && !s.IsDeleted);
+    }
+
+    public async Task<IEnumerable<UserSession>> GetAllSessionsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.UserSessions.Where(us => !us.IsDeleted).ToListAsync(cancellationToken);
     }
 
     public void Update(UserSession userSession)

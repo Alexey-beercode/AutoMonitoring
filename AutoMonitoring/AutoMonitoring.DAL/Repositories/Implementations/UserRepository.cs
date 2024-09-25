@@ -18,4 +18,9 @@ public class UserRepository:BaseRepository<User>,IUserRepository
     {
         return await _dbContext.Users.FirstOrDefaultAsync(u => u.Login == login && !u.IsDeleted, cancellationToken);
     }
+
+    public void Update(User user)
+    {
+        _dbContext.Users.Update(user);
+    }
 }

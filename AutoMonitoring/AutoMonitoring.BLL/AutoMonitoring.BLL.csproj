@@ -15,10 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="DTOs\Implementations\BaseDTOs\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\AutoMonitoring.DAL\AutoMonitoring.DAL.csproj" />
       <ProjectReference Include="..\AutoMonitoring.Domain\AutoMonitoring.Domain.csproj" />
     </ItemGroup>

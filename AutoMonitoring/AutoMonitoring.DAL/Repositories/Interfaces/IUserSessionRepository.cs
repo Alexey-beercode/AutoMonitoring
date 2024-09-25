@@ -4,6 +4,8 @@ namespace AutoMonitoring.DAL.Repositories.Interfaces;
 
 public interface IUserSessionRepository:IBaseRepository<UserSession>
 {
-    Task<UserSession> GetActiveSessionAsync(Guid userId,CancellationToken cancellationToken=default);
+    Task<UserSession> GetActiveSessionByUserIdAsync(Guid userId,CancellationToken cancellationToken=default);
+    Task<IEnumerable<UserSession>> GetAllSessionsAsync(CancellationToken cancellationToken = default);
     void Update(UserSession userSession);
+
 }

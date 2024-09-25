@@ -1,10 +1,10 @@
 using System.Text;
 using AutoMonitoring.BLL.Infrastructure.Mapper;
+using AutoMonitoring.BLL.Infrastructure.Validators;
 using AutoMonitoring.DAL.Infrastructure;
 using AutoMonitoring.DAL.Infrastructure.Database;
 using AutoMonitoring.DAL.Repositories.Implementations;
 using AutoMonitoring.DAL.Repositories.Interfaces;
-using EventMaster.BLL.Infrastructure.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

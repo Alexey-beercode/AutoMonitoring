@@ -1,7 +1,7 @@
 using AutoMonitoring.BLL.DTOs.Implementations.Requests.User;
 using FluentValidation;
 
-namespace EventMaster.BLL.Infrastructure.Validators;
+namespace AutoMonitoring.BLL.Infrastructure.Validators;
 
 public class UserDTOValidator : AbstractValidator<LoginDTO>
 {

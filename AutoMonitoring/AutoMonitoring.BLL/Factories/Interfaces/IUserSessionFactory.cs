@@ -4,5 +4,5 @@ namespace AutoMonitoring.BLL.Factories.Interfaces;
 
 public interface IUserSessionFactory
 {
-    UserSession Create(Guid userId, string deviceName, string refreshToken);
+    UserSession Create(Guid userId, string deviceName, string refreshToken,DateTime refreshTokenExpireTime);
 }

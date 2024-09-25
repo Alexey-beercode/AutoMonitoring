@@ -22,7 +22,7 @@ public class UserSessionService:IUserSessionService
         return await _unitOfWork.UserSessions.GetActiveSessionByUserIdAsync(userId,cancellationToken)==null;
     }
 
-    public async Task CreateOrUpdateSessionAsync(Guid userId,string deviceName,string refreshToken, CancellationToken cancellationToken = default)
+    public async Task CreateOrUpdateSessionAsync(Guid userId,string deviceName,string refreshToken,DateTime refreshTokenExpireTime, CancellationToken cancellationToken = default)
     {
         var session = await _unitOfWork.UserSessions.GetActiveSessionByUserIdAsync(userId, cancellationToken);
         if (session != null)
@@ -36,7 +36,7 @@ public class UserSessionService:IUserSessionService
         }
         else
         {
-            session = _userSessionFactory.Create(userId, deviceName, refreshToken);
+            session = _userSessionFactory.Create(userId, deviceName, refreshToken,refreshTokenExpireTime);
             await _unitOfWork.UserSessions.CreateAsync(session, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
@@ -74,7 +74,30 @@ public class UserSessionService:IUserSessionService
         if (activeSession != null)
         {
             activeSession.IsActive = false;
+            activeSession.RefreshToken = string.Empty;
+            activeSession.RefreshTokenExpiryTime=DateTime.MinValue;
             _unitOfWork.UserSessions.Update(activeSession);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public async Task<UserSession> GetSessionByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    {
+        var userSession = await _unitOfWork.UserSessions.GetSessionByRefreshTokenAsync(refreshToken, cancellationToken);
+        if (userSession==null)
+        {
+            throw new EntityNotFoundException("UserSession with refresh token not found");
+        }
+
+        return userSession;
+    }
+    public async Task UpdateSessionActivityAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var session = await _unitOfWork.UserSessions.GetActiveSessionByUserIdAsync(userId, cancellationToken);
+        if (session != null)
+        {
+            session.LastActive = DateTime.UtcNow;
+            _unitOfWork.UserSessions.Update(session);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }

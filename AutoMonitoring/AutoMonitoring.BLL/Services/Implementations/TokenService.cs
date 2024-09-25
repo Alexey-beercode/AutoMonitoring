@@ -45,7 +45,7 @@ public class TokenService:ITokenService
         }
     }
 
-    public List<Claim> CreateClaims(User user, List<Role> roles)
+    public List<Claim> CreateClaims(User user, IEnumerable<Role> roles)
     {
         var claims = new List<Claim>
         {

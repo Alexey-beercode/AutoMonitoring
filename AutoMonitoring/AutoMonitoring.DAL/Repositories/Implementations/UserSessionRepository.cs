@@ -28,4 +28,10 @@ public class UserSessionRepository:BaseRepository<UserSession>,IUserSessionRepos
     {
         _dbContext.UserSessions.Update(userSession);
     }
+
+    public async Task<UserSession> GetSessionByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.UserSessions.FirstOrDefaultAsync(us => us.RefreshToken == refreshToken && !us.IsDeleted,
+            cancellationToken);
+    }
 }

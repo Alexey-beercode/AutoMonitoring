@@ -42,21 +42,6 @@ public class UserSessionService:IUserSessionService
         }
     }
 
-    public async Task BlockUserAsync(BlockUserDTO blockUserDto, CancellationToken cancellationToken = default)
-    {
-        var user = await _unitOfWork.Users.GetByIdAsync(blockUserDto.UserId, cancellationToken);
-    
-        if (user == null)
-        {
-            throw new EntityNotFoundException("User",blockUserDto.UserId);
-        }
-
-        user.IsBlocked = true;
-        user.BlockedUntil = blockUserDto.BlockUntil ?? DateTime.MaxValue;
-        _unitOfWork.Users.Update(user);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-    }
-
     public Task<IEnumerable<UserSession>> GetAllSessionsAsync(CancellationToken cancellationToken = default)
     {
         return _unitOfWork.UserSessions.GetAllSessionsAsync(cancellationToken);

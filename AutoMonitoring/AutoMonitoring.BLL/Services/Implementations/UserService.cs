@@ -8,6 +8,7 @@ using AutoMonitoring.BLL.Services.Interfaces;
 using AutoMonitoring.DAL.Infrastructure;
 using AutoMonitoring.DAL.Repositories.Interfaces;
 using AutoMonitoring.Domain.Entities.Implementations;
+using AutoMonitoring.Domain.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace AutoMonitoring.BLL.Services.Implementations;
@@ -19,24 +20,29 @@ public class UserService:IUserService
     private readonly ITokenService _tokenService;
     private readonly IUserSessionService _userSessionService;
     private readonly IConfiguration _configuration;
+    private readonly IRoleService _roleService;
 
-    public UserService(IUnitOfWork unitOfWork, IMapper mapper, ITokenService tokenService, IUserSessionService userSessionService, IConfiguration configuration)
+    public UserService(IUnitOfWork unitOfWork, IMapper mapper, ITokenService tokenService, IUserSessionService userSessionService, IConfiguration configuration, IRoleService roleService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _tokenService = tokenService;
         _userSessionService = userSessionService;
         _configuration = configuration;
+        _roleService = roleService;
     }
 
-    public async Task RegisterAsync(LoginDTO loginDto, CancellationToken cancellationToken = default)
+    public async Task RegisterAsync(UserDTO userDto, CancellationToken cancellationToken = default)
     {
-        var userFromDb = await _unitOfWork.Users.GetByLoginAsync(loginDto.Login, cancellationToken);
+        var userFromDb = await _unitOfWork.Users.GetByLoginAsync(userDto.Login, cancellationToken);
         if (userFromDb==null)
         {
             throw new AlreadyExistsException("User");
         }
-        var user = _mapper.Map<User>(loginDto);
+        var user = _mapper.Map<User>(userDto);
+        var baseRole = await _unitOfWork.Roles.GetByNameAsync("Resident");
+        await _roleService.SetRoleToUserAsync(new UserRoleModel() { RoleId = baseRole.Id, UserId = user.Id },
+            cancellationToken);
         await _unitOfWork.Users.CreateAsync(user, cancellationToken);
     }
 
@@ -48,6 +54,10 @@ public class UserService:IUserService
             throw new UnauthorizedAccessException("Invalid login or password.");
         }
         
+        if (user.IsBlocked && user.BlockedUntil > DateTime.UtcNow)
+        {
+            throw new UserBlockedException($"User is blocked until {user.BlockedUntil}.");
+        }
         var session = await _userSessionService.GetActiveSessionByUserIdAsync(user.Id, cancellationToken);
 
         string refreshToken;
@@ -60,30 +70,42 @@ public class UserService:IUserService
             }
             else
             {
-                // Если устройство другое — выбрасываем ошибку
                 throw new UnauthorizedAccessException("Access denied. Session is active on another device.");
             }
         }
         else
         {
-            // Если сессии нет, создаем новую и генерируем RefreshToken
             refreshToken = _tokenService.GenerateRefreshToken();
             await _userSessionService.CreateOrUpdateSessionAsync(user.Id, loginDto.DeviceName, refreshToken,DateTime.UtcNow.AddDays(_configuration.GetSection("Jwt:RefreshTokenExpirationDays").Get<int>()), cancellationToken);
         }
-
-        // Шаг 3: Создаем токены и возвращаем их
+        
         var claims = _tokenService.CreateClaims(user, await _unitOfWork.Roles.GetRolesByUserIdAsync(user.Id, cancellationToken));
         var accessToken = _tokenService.GenerateAccessToken(claims);
-
-        // Возвращаем Access и Refresh токены
+        
         return new TokenDTO(){AccessToken = accessToken,RefreshToken = refreshToken};
     }
 
     public async Task<IEnumerable<UserResponseDTO>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var users = await _unitOfWork.Users.GetAllAsync(cancellationToken);
-        return _mapper.Map<IEnumerable<UserResponseDTO>>(users);
+        var usersReponses = new List<UserResponseDTO>();
+
+        foreach (var user in users)
+        {
+            var userResponse = _mapper.Map<UserResponseDTO>(user);
+            var session = await _userSessionService.GetActiveSessionByUserIdAsync(user.Id, cancellationToken);
+
+            if (session != null)
+            {
+                _mapper.Map(session, userResponse);
+            }
+
+            usersReponses.Add(userResponse);
+        }
+
+        return usersReponses;
     }
+
 
     public async Task<TokenDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDto, CancellationToken cancellationToken = default)
     {
@@ -93,23 +115,42 @@ public class UserService:IUserService
             throw new UnauthorizedAccessException("Invalid or expired refresh token.");
         }
         
+        var user = await _unitOfWork.Users.GetByIdAsync(session.UserId, cancellationToken);
+        if (user.IsBlocked && user.BlockedUntil > DateTime.UtcNow)
+        {
+            throw new UserBlockedException($"User is blocked until {user.BlockedUntil}.");
+        }
+
         if (session.DeviceName != refreshTokenDto.DeviceName)
         {
             throw new UnauthorizedAccessException("Access denied. Refresh token is not valid for this device.");
         }
-        
+
         var newRefreshToken = _tokenService.GenerateRefreshToken();
         session.RefreshToken = newRefreshToken;
-        session.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_configuration.GetSection("Jwt:RefreshTokenExpirationDays").Get<int>()); 
+        session.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_configuration.GetSection("Jwt:RefreshTokenExpirationDays").Get<int>());
         session.LastActive = DateTime.UtcNow;
         _unitOfWork.UserSessions.Update(session);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        
-        var user = await _unitOfWork.Users.GetByIdAsync(session.UserId, cancellationToken);
-        var rolesByUser=  await _unitOfWork.Roles.GetRolesByUserIdAsync(user.Id, cancellationToken);
-        var claims = _tokenService.CreateClaims(user,rolesByUser);
+
+        var rolesByUser = await _unitOfWork.Roles.GetRolesByUserIdAsync(user.Id, cancellationToken);
+        var claims = _tokenService.CreateClaims(user, rolesByUser);
         var newAccessToken = _tokenService.GenerateAccessToken(claims);
-        
-        return new TokenDTO(){AccessToken = newAccessToken,RefreshToken = newRefreshToken}; 
+
+        return new TokenDTO() { AccessToken = newAccessToken, RefreshToken = newRefreshToken };
+    }
+    public async Task BlockUserAsync(BlockUserDTO blockUserDto, CancellationToken cancellationToken = default)
+    {
+        var user = await _unitOfWork.Users.GetByIdAsync(blockUserDto.UserId, cancellationToken);
+    
+        if (user == null)
+        {
+            throw new EntityNotFoundException("User",blockUserDto.UserId);
+        }
+
+        user.IsBlocked = true;
+        user.BlockedUntil = blockUserDto.BlockUntil ?? DateTime.MaxValue;
+        _unitOfWork.Users.Update(user);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

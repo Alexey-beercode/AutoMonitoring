@@ -12,7 +12,8 @@ public class UserProfile:Profile
         CreateMap<LoginDTO, User>()
             .ForMember(dest => dest.Password, opt => opt.Ignore())
             .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
-        
+
         CreateMap<User, UserResponseDTO>();
+        CreateMap<UserSession, UserResponseDTO>();
     }
 }

@@ -7,8 +7,9 @@ namespace AutoMonitoring.BLL.Services.Interfaces;
 
 public interface IUserService
 {
-    Task RegisterAsync(LoginDTO loginDto,CancellationToken cancellationToken=default);
+    Task RegisterAsync(UserDTO userDto,CancellationToken cancellationToken=default);
     Task<TokenDTO> LoginAsync(LoginDTO loginDto,CancellationToken cancellationToken=default);
     Task<IEnumerable<UserResponseDTO>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<TokenDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDto, CancellationToken cancellationToken=default);
+    Task BlockUserAsync(BlockUserDTO blockUserDto, CancellationToken cancellationToken = default);
 }

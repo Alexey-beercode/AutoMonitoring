@@ -28,4 +28,26 @@ public class RoleRepository:BaseRepository<Role>,IRoleRepository
 
         return roles;
     }
+
+    public async Task<bool> SetRoleToUserAsync(Guid userId, Guid roleId, CancellationToken cancellationToken = default)
+    {
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+        var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == roleId, cancellationToken);
+
+        if (user == null || role == null)
+        {
+            return false;
+        }
+
+        var isExists =
+            await _dbContext.UserRoles.AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId, cancellationToken);
+        if (isExists)
+        {
+            return false;
+        }
+
+        var userRole = new UserRole { UserId = userId, RoleId = roleId };
+        await _dbContext.UserRoles.AddAsync(userRole, cancellationToken);
+        return true;
+    }
 }

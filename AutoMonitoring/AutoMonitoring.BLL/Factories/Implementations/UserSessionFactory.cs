@@ -1,8 +1,9 @@
-﻿using AutoMonitoring.Domain.Entities.Implementations;
+﻿using AutoMonitoring.BLL.Factories.Interfaces;
+using AutoMonitoring.Domain.Entities.Implementations;
 
 namespace AutoMonitoring.BLL.Factories.Implementations;
 
-public class UserSessionFactory
+public class UserSessionFactory:IUserSessionFactory
 {
     public UserSession Create(Guid userId, string deviceName, string refreshToken,DateTime refreshTokenExpireTime)
     {

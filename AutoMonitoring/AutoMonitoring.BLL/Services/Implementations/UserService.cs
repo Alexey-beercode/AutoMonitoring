@@ -35,15 +35,18 @@ public class UserService:IUserService
     public async Task RegisterAsync(UserDTO userDto, CancellationToken cancellationToken = default)
     {
         var userFromDb = await _unitOfWork.Users.GetByLoginAsync(userDto.Login, cancellationToken);
-        if (userFromDb==null)
+        if (userFromDb!=null)
         {
             throw new AlreadyExistsException("User");
         }
         var user = _mapper.Map<User>(userDto);
         var baseRole = await _unitOfWork.Roles.GetByNameAsync("Resident");
+        
+        await _unitOfWork.Users.CreateAsync(user, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _roleService.SetRoleToUserAsync(new UserRoleModel() { RoleId = baseRole.Id, UserId = user.Id },
             cancellationToken);
-        await _unitOfWork.Users.CreateAsync(user, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<TokenDTO> LoginAsync(LoginDTO loginDto, CancellationToken cancellationToken = default)
@@ -82,7 +85,7 @@ public class UserService:IUserService
         var claims = _tokenService.CreateClaims(user, await _unitOfWork.Roles.GetRolesByUserIdAsync(user.Id, cancellationToken));
         var accessToken = _tokenService.GenerateAccessToken(claims);
         
-        return new TokenDTO(){AccessToken = accessToken,RefreshToken = refreshToken};
+        return new TokenDTO(){AccessToken = accessToken,RefreshToken = refreshToken,UserId = user.Id};
     }
 
     public async Task<IEnumerable<UserResponseDTO>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -137,7 +140,7 @@ public class UserService:IUserService
         var claims = _tokenService.CreateClaims(user, rolesByUser);
         var newAccessToken = _tokenService.GenerateAccessToken(claims);
 
-        return new TokenDTO() { AccessToken = newAccessToken, RefreshToken = newRefreshToken };
+        return new TokenDTO() { AccessToken = newAccessToken, RefreshToken = newRefreshToken,UserId = user.Id};
     }
     public async Task BlockUserAsync(BlockUserDTO blockUserDto, CancellationToken cancellationToken = default)
     {

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>AutoMonitoring.Tests</RootNamespace>
+        <AssemblyName>AutoMonitoring.Tests</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Unit testing and mocking dependencies -->
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
+        <PackageReference Include="Moq" Version="4.18.1" />
+
+        <!-- Assertion library -->
+        <PackageReference Include="FluentAssertions" Version="6.12.1" />
+
+        <!-- ASP.NET Core testing framework -->
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.8" />
+
+        <!-- Required libraries for integration tests and async operations -->
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
+        <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
+        <PackageReference Include="System.Text.Json" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AutoMonitoring.BLL\AutoMonitoring.BLL.csproj" />
+      <ProjectReference Include="..\AutoMonitoring.Presentation\AutoMonitoring.Presentation.csproj" />
+        <ProjectReference Include="..\AutoMonitoring\AutoMonitoring.csproj" />
+
+    </ItemGroup>
+
+</Project>

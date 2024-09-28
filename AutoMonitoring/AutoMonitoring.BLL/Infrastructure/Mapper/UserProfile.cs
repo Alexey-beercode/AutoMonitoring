@@ -15,5 +15,6 @@ public class UserProfile:Profile
 
         CreateMap<User, UserResponseDTO>();
         CreateMap<UserSession, UserResponseDTO>();
+        CreateMap<UserDTO, User>();
     }
 }

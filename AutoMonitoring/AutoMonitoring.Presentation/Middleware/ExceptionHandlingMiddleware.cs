@@ -59,6 +59,9 @@ public class ExceptionHandlingMiddleware
             case AlreadyExistsException:
                 response.StatusCode = (int)HttpStatusCode.Conflict;
                 break;
+            case UserBlockedException:
+                response.StatusCode = (int)HttpStatusCode.Forbidden;
+                break;
             default:
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 break;

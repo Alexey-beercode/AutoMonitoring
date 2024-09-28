@@ -1,11 +1,11 @@
-using AutoMonitoring.BLL.DTOs.Implementations.Requests.User;
+﻿using AutoMonitoring.BLL.DTOs.Implementations.Requests.User;
 using FluentValidation;
 
 namespace AutoMonitoring.BLL.Infrastructure.Validators;
 
-public class UserDTOValidator : AbstractValidator<LoginDTO>
+public class LoginDTOValidator : AbstractValidator<LoginDTO>
 {
-    public UserDTOValidator()
+    public LoginDTOValidator()
     {
         RuleFor(x => x.Login)
             .NotEmpty().WithMessage("Login is required.")
@@ -14,5 +14,8 @@ public class UserDTOValidator : AbstractValidator<LoginDTO>
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password is required.")
             .MinimumLength(6).WithMessage("Password must be at least 6 characters long.");
+
+        RuleFor(x => x.DeviceName)
+            .NotEmpty().WithMessage("Device name is required.");
     }
 }

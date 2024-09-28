@@ -1,6 +1,10 @@
 using System.Text;
+using AutoMonitoring.BLL.Factories.Implementations;
+using AutoMonitoring.BLL.Factories.Interfaces;
 using AutoMonitoring.BLL.Infrastructure.Mapper;
 using AutoMonitoring.BLL.Infrastructure.Validators;
+using AutoMonitoring.BLL.Services.Implementations;
+using AutoMonitoring.BLL.Services.Interfaces;
 using AutoMonitoring.DAL.Infrastructure;
 using AutoMonitoring.DAL.Infrastructure.Database;
 using AutoMonitoring.DAL.Repositories.Implementations;
@@ -119,16 +123,26 @@ public static class WebApplicationBuilderExtension
         builder.Services.AddScoped<IUserRepository,UserRepository>();
         builder.Services.AddScoped<IUserSessionRepository,UserSessionRepository>();
         builder.Services.AddScoped<IRoleRepository,RoleRepository>();
-        
+
+        builder.Services.AddScoped<IUserSessionFactory, UserSessionFactory>();
+
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IRoleService, RoleService>();
+        builder.Services.AddScoped<IUserSessionService, UserSessionService>();
+        builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddControllers(); 
         
     }
 
     public static void AddValidation(this WebApplicationBuilder builder)
     {
+        builder.Services.AddValidatorsFromAssemblyContaining<UserDTOValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<BlockUserDTOValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<LoginDTOValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<RefreshTokenDTOValidator>();
         builder
             .Services.AddFluentValidationAutoValidation()
             .AddFluentValidationClientsideAdapters();
-        builder.Services.AddValidatorsFromAssemblyContaining<UserDTOValidator>();
+      
     }
 }

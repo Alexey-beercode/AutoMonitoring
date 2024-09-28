@@ -168,4 +168,18 @@ public class UserService:IUserService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _userSessionService.DeleteSessionByUserId(userFromDb.Id);
     }
+
+    public async Task UnblockUserAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var user = await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
+    
+        if (user == null)
+        {
+            throw new EntityNotFoundException("User",id);
+        }
+
+        user.IsBlocked = false;
+        _unitOfWork.Users.Update(user);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
 }

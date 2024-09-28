@@ -23,8 +23,5 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.IsDeleted)
             .IsRequired();
-
-        builder.HasIndex(u => u.Login)
-            .IsUnique();
     }
 }

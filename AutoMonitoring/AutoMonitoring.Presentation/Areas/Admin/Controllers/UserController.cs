@@ -39,6 +39,13 @@ public class UserController:ControllerBase
         return Ok();
     }
 
+    [HttpPut("unblock/{userId}")]
+    public async Task<IActionResult> UnblockUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        await _userService.UnblockUserAsync(userId, cancellationToken);
+        return Ok();
+    }
+
     [HttpDelete("delete/{login}")]
     public async Task<IActionResult> DeleteUserAsync(string login, CancellationToken cancellationToken = default)
     {

@@ -8,5 +8,6 @@ public interface IUserSessionRepository:IBaseRepository<UserSession>
     Task<IEnumerable<UserSession>> GetAllSessionsAsync(CancellationToken cancellationToken = default);
     void Update(UserSession userSession);
     Task<UserSession> GetSessionByRefreshTokenAsync(string refreshToken,CancellationToken cancellationToken=default);
+    void DeleteSessionByUserId(Guid userId);
 
 }

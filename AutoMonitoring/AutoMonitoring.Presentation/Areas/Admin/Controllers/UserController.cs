@@ -38,4 +38,11 @@ public class UserController:ControllerBase
         await _userService.BlockUserAsync(blockUserDto, cancellationToken);
         return Ok();
     }
+
+    [HttpDelete("delete/{login}")]
+    public async Task<IActionResult> DeleteUserAsync(string login, CancellationToken cancellationToken = default)
+    {
+        await _userService.DeleteAsync(login, cancellationToken);
+        return Ok();
+    }
 }

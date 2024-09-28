@@ -12,4 +12,5 @@ public interface IUserService
     Task<IEnumerable<UserResponseDTO>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<TokenDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDto, CancellationToken cancellationToken=default);
     Task BlockUserAsync(BlockUserDTO blockUserDto, CancellationToken cancellationToken = default);
+    Task DeleteAsync(string login, CancellationToken cancellationToken = default);
 }

@@ -34,4 +34,16 @@ public class UserSessionRepository:BaseRepository<UserSession>,IUserSessionRepos
         return await _dbContext.UserSessions.FirstOrDefaultAsync(us => us.RefreshToken == refreshToken && !us.IsDeleted,
             cancellationToken);
     }
+
+    public void DeleteSessionByUserId(Guid userId)
+    {
+        var sessionsToDelete = _dbContext.UserSessions
+            .Where(us => us.UserId == userId && !us.IsDeleted);
+
+        foreach (var session in sessionsToDelete)
+        {
+            session.IsDeleted = true;
+            _dbContext.UserSessions.Update(session);
+        }
+    }
 }

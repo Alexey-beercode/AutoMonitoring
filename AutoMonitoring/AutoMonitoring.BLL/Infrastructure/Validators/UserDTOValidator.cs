@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace AutoMonitoring.BLL.Infrastructure.Validators;
 
-public class UserDTOValidator : AbstractValidator<LoginDTO>
+public class UserDTOValidator : AbstractValidator<UserDTO>
 {
     public UserDTOValidator()
     {

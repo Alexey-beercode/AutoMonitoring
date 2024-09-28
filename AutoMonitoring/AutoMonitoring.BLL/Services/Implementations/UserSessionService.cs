@@ -55,7 +55,10 @@ public class UserSessionService:IUserSessionService
     public async Task RevokeSessionAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var activeSession = await _unitOfWork.UserSessions.GetActiveSessionByUserIdAsync(userId, cancellationToken);
-        
+        if (activeSession==null)
+        {
+            throw new EntityNotFoundException($"User with id : {userId} doesnt has session");
+        }
         if (activeSession != null)
         {
             activeSession.IsActive = false;
@@ -85,5 +88,12 @@ public class UserSessionService:IUserSessionService
             _unitOfWork.UserSessions.Update(session);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
+    }
+
+    public async Task DeleteSessionByUserId(Guid userId, CancellationToken cancellationToken = default)
+    {
+        _unitOfWork.UserSessions.DeleteSessionByUserId(userId);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
     }
 }

@@ -156,4 +156,16 @@ public class UserService:IUserService
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task DeleteAsync(string login, CancellationToken cancellationToken = default)
+    {
+        var userFromDb = await _unitOfWork.Users.GetByLoginAsync(login, cancellationToken);
+        if (userFromDb==null)
+        {
+            throw new EntityNotFoundException($"User with login : {login} not found");
+        }
+        _unitOfWork.Users.Delete(userFromDb);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _userSessionService.DeleteSessionByUserId(userFromDb.Id);
+    }
 }

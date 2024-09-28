@@ -1,6 +1,7 @@
 ﻿using AutoMonitoring.BLL.DTOs.Implementations.Requests.Token;
 using AutoMonitoring.BLL.DTOs.Implementations.Requests.User;
 using AutoMonitoring.BLL.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutoMonitoring.Controllers;
@@ -33,6 +34,7 @@ public class AuthController:ControllerBase
         return Ok(token);
     }
 
+    [Authorize]
     [HttpPut("logout/{userId}")]
     public async Task<IActionResult> RevokeAsync(Guid userId, CancellationToken cancellationToken = default)
     {

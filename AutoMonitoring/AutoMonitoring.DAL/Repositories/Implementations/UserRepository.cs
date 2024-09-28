@@ -23,4 +23,15 @@ public class UserRepository:BaseRepository<User>,IUserRepository
     {
         _dbContext.Users.Update(user);
     }
+
+    public void Delete(User entity)
+    {
+        base.Delete(entity);
+        var usersRolesByUser =  _dbContext.UserRoles.Where(ur => ur.UserId == entity.Id);
+        foreach (var userRole in usersRolesByUser)
+        {
+            userRole.IsDeleted = true;
+            _dbContext.UserRoles.Update(userRole);
+        }
+    }
 }

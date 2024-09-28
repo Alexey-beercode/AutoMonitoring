@@ -1,5 +1,6 @@
 using AutoMonitoring.DAL.Infrastructure.Database;
 using AutoMonitoring.DAL.Repositories.Interfaces;
+using AutoMonitoring.Domain.Entities.Implementations;
 using AutoMonitoring.Domain.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

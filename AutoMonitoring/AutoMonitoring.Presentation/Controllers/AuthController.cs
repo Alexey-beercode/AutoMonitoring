@@ -41,4 +41,11 @@ public class AuthController:ControllerBase
         await _userSessionService.RevokeSessionAsync(userId, cancellationToken);
         return Ok();
     }
+
+    [Authorize]
+    [HttpGet("getTokenStatus")]
+    public IActionResult CheckTokenStatus()
+    {
+        return Ok(new { status = "Token is active" });
+    }
 }

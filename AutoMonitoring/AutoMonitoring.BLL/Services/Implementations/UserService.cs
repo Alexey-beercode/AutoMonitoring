@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace AutoMonitoring.BLL.Services.Implementations;
 
-public class UserService:IUserService
+public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -22,7 +22,8 @@ public class UserService:IUserService
     private readonly IConfiguration _configuration;
     private readonly IRoleService _roleService;
 
-    public UserService(IUnitOfWork unitOfWork, IMapper mapper, ITokenService tokenService, IUserSessionService userSessionService, IConfiguration configuration, IRoleService roleService)
+    public UserService(IUnitOfWork unitOfWork, IMapper mapper, ITokenService tokenService,
+        IUserSessionService userSessionService, IConfiguration configuration, IRoleService roleService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -35,13 +36,14 @@ public class UserService:IUserService
     public async Task RegisterAsync(UserDTO userDto, CancellationToken cancellationToken = default)
     {
         var userFromDb = await _unitOfWork.Users.GetByLoginAsync(userDto.Login, cancellationToken);
-        if (userFromDb!=null)
+        if (userFromDb != null)
         {
             throw new AlreadyExistsException("User");
         }
+
         var user = _mapper.Map<User>(userDto);
         var baseRole = await _unitOfWork.Roles.GetByNameAsync("Resident");
-        
+
         await _unitOfWork.Users.CreateAsync(user, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _roleService.SetRoleToUserAsync(new UserRoleModel() { RoleId = baseRole.Id, UserId = user.Id },
@@ -52,15 +54,16 @@ public class UserService:IUserService
     public async Task<TokenDTO> LoginAsync(LoginDTO loginDto, CancellationToken cancellationToken = default)
     {
         var user = await _unitOfWork.Users.GetByLoginAsync(loginDto.Login, cancellationToken);
-        if (user == null || user.Password !=loginDto.Password) 
+        if (user == null || user.Password != loginDto.Password)
         {
             throw new UnauthorizedAccessException("Invalid login or password.");
         }
-        
+
         if (user.IsBlocked && user.BlockedUntil > DateTime.UtcNow)
         {
             throw new UserBlockedException($"User is blocked until {user.BlockedUntil}.");
         }
+
         var session = await _userSessionService.GetActiveSessionByUserIdAsync(user.Id, cancellationToken);
 
         string refreshToken;
@@ -79,13 +82,16 @@ public class UserService:IUserService
         else
         {
             refreshToken = _tokenService.GenerateRefreshToken();
-            await _userSessionService.CreateOrUpdateSessionAsync(user.Id, loginDto.DeviceName, refreshToken,DateTime.UtcNow.AddDays(_configuration.GetSection("Jwt:RefreshTokenExpirationDays").Get<int>()), cancellationToken);
+            await _userSessionService.CreateOrUpdateSessionAsync(user.Id, loginDto.DeviceName, refreshToken,
+                DateTime.UtcNow.AddDays(_configuration.GetSection("Jwt:RefreshTokenExpirationDays").Get<int>()),
+                cancellationToken);
         }
-        
-        var claims = _tokenService.CreateClaims(user, await _unitOfWork.Roles.GetRolesByUserIdAsync(user.Id, cancellationToken));
+
+        var claims = _tokenService.CreateClaims(user,
+            await _unitOfWork.Roles.GetRolesByUserIdAsync(user.Id, cancellationToken));
         var accessToken = _tokenService.GenerateAccessToken(claims);
-        
-        return new TokenDTO(){AccessToken = accessToken,RefreshToken = refreshToken,UserId = user.Id};
+
+        return new TokenDTO() { AccessToken = accessToken, RefreshToken = refreshToken, UserId = user.Id };
     }
 
     public async Task<IEnumerable<UserResponseDTO>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -110,14 +116,16 @@ public class UserService:IUserService
     }
 
 
-    public async Task<TokenDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDto, CancellationToken cancellationToken = default)
+    public async Task<TokenDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDto,
+        CancellationToken cancellationToken = default)
     {
-        var session = await _userSessionService.GetSessionByRefreshTokenAsync(refreshTokenDto.RefreshToken, cancellationToken);
+        var session =
+            await _userSessionService.GetSessionByRefreshTokenAsync(refreshTokenDto.RefreshToken, cancellationToken);
         if (session == null || !session.IsActive)
         {
             throw new UnauthorizedAccessException("Invalid or expired refresh token.");
         }
-        
+
         var user = await _unitOfWork.Users.GetByIdAsync(session.UserId, cancellationToken);
         if (user.IsBlocked && user.BlockedUntil > DateTime.UtcNow)
         {
@@ -131,7 +139,8 @@ public class UserService:IUserService
 
         var newRefreshToken = _tokenService.GenerateRefreshToken();
         session.RefreshToken = newRefreshToken;
-        session.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_configuration.GetSection("Jwt:RefreshTokenExpirationDays").Get<int>());
+        session.RefreshTokenExpiryTime =
+            DateTime.UtcNow.AddDays(_configuration.GetSection("Jwt:RefreshTokenExpirationDays").Get<int>());
         session.LastActive = DateTime.UtcNow;
         _unitOfWork.UserSessions.Update(session);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -140,15 +149,16 @@ public class UserService:IUserService
         var claims = _tokenService.CreateClaims(user, rolesByUser);
         var newAccessToken = _tokenService.GenerateAccessToken(claims);
 
-        return new TokenDTO() { AccessToken = newAccessToken, RefreshToken = newRefreshToken,UserId = user.Id};
+        return new TokenDTO() { AccessToken = newAccessToken, RefreshToken = newRefreshToken, UserId = user.Id };
     }
+
     public async Task BlockUserAsync(BlockUserDTO blockUserDto, CancellationToken cancellationToken = default)
     {
         var user = await _unitOfWork.Users.GetByIdAsync(blockUserDto.UserId, cancellationToken);
-    
+
         if (user == null)
         {
-            throw new EntityNotFoundException("User",blockUserDto.UserId);
+            throw new EntityNotFoundException("User", blockUserDto.UserId);
         }
 
         user.IsBlocked = true;
@@ -160,10 +170,11 @@ public class UserService:IUserService
     public async Task DeleteAsync(string login, CancellationToken cancellationToken = default)
     {
         var userFromDb = await _unitOfWork.Users.GetByLoginAsync(login, cancellationToken);
-        if (userFromDb==null)
+        if (userFromDb == null)
         {
             throw new EntityNotFoundException($"User with login : {login} not found");
         }
+
         _unitOfWork.Users.Delete(userFromDb);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _userSessionService.DeleteSessionByUserId(userFromDb.Id);
@@ -172,10 +183,10 @@ public class UserService:IUserService
     public async Task UnblockUserAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var user = await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
-    
+
         if (user == null)
         {
-            throw new EntityNotFoundException("User",id);
+            throw new EntityNotFoundException("User", id);
         }
 
         user.IsBlocked = false;

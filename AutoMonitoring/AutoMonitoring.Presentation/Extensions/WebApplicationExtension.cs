@@ -14,8 +14,10 @@ public static class WebApplicationExtension
     }
     public static void AddApplicationMiddleware(this WebApplication app)
     {
-        app.UseHttpsRedirection();
-        app.UseStaticFiles();
+        app.UseHttpsRedirection(); 
+        app.UseStaticFiles(); 
+        app.UseRouting(); 
+        
         app.UseCors(builder =>
         {
             builder.WithOrigins("http://localhost:5500") 
@@ -23,11 +25,10 @@ public static class WebApplicationExtension
                 .AllowAnyHeader()
                 .AllowCredentials();
         }); 
-        app.UseRouting();
         
         app.UseAuthentication();
         app.UseAuthorization();
-        
+
         app.MapControllers();
         
         app.UseMiddleware<ExceptionHandlingMiddleware>();

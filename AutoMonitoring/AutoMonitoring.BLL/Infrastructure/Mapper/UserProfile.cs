@@ -14,7 +14,10 @@ public class UserProfile:Profile
             .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
 
         CreateMap<User, UserResponseDTO>();
-        CreateMap<UserSession, UserResponseDTO>();
+        CreateMap<UserSession, UserResponseDTO>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest=>dest.LastActive,opt=>opt.MapFrom(srs=>srs.LastActive));
+        
         CreateMap<UserDTO, User>();
     }
 }

@@ -6,7 +6,6 @@ using AutoMonitoring.BLL.DTOs.Implementations.Responses.User;
 using AutoMonitoring.BLL.Exceptions;
 using AutoMonitoring.BLL.Services.Interfaces;
 using AutoMonitoring.DAL.Infrastructure;
-using AutoMonitoring.DAL.Repositories.Interfaces;
 using AutoMonitoring.Domain.Entities.Implementations;
 using AutoMonitoring.Domain.Models;
 using Microsoft.Extensions.Configuration;
@@ -102,7 +101,7 @@ public class UserService : IUserService
         foreach (var user in users)
         {
             var userResponse = _mapper.Map<UserResponseDTO>(user);
-            var session = await _userSessionService.GetActiveSessionByUserIdAsync(user.Id, cancellationToken);
+            var session = await _userSessionService.GetLastSessionByUserIdAsync(user.Id, cancellationToken);
 
             if (session != null)
             {

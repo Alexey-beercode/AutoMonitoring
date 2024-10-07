@@ -62,8 +62,6 @@ public class UserSessionService:IUserSessionService
         if (activeSession != null)
         {
             activeSession.IsActive = false;
-            activeSession.RefreshToken = string.Empty;
-            activeSession.RefreshTokenExpiryTime=DateTime.MinValue;
             _unitOfWork.UserSessions.Update(activeSession);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
@@ -95,5 +93,10 @@ public class UserSessionService:IUserSessionService
         _unitOfWork.UserSessions.DeleteSessionByUserId(userId);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+    }
+
+    public async Task<UserSession> GetLastSessionByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await _unitOfWork.UserSessions.GetLastSessionByUserIdAsync(userId, cancellationToken);
     }
 }

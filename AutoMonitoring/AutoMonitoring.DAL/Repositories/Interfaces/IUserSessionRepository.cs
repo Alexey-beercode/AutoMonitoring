@@ -9,5 +9,6 @@ public interface IUserSessionRepository:IBaseRepository<UserSession>
     void Update(UserSession userSession);
     Task<UserSession> GetSessionByRefreshTokenAsync(string refreshToken,CancellationToken cancellationToken=default);
     void DeleteSessionByUserId(Guid userId);
+    Task<UserSession> GetLastSessionByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
 }

@@ -15,4 +15,5 @@ public interface IUserSessionService
     Task<UserSession> GetSessionByRefreshTokenAsync(string refreshToken,CancellationToken cancellationToken=default);
     Task UpdateSessionActivityAsync(Guid userId, CancellationToken cancellationToken = default);
     Task DeleteSessionByUserId(Guid userId, CancellationToken cancellationToken = default);
+    Task<UserSession> GetLastSessionByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 }

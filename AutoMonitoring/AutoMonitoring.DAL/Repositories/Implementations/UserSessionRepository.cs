@@ -46,4 +46,12 @@ public class UserSessionRepository:BaseRepository<UserSession>,IUserSessionRepos
             _dbContext.UserSessions.Update(session);
         }
     }
+
+    public async Task<UserSession> GetLastSessionByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.UserSessions
+            .Where(us => us.UserId == userId)
+            .OrderByDescending(us => us.LastActive) 
+            .FirstOrDefaultAsync(cancellationToken); 
+    }
 }

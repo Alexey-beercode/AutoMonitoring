@@ -48,4 +48,12 @@ public class AuthController:ControllerBase
     {
         return Ok(new { status = "Token is active" });
     }
+
+    [Authorize]
+    [HttpGet("getAccess/{userId}")]
+    public async Task<IActionResult> HasMainResourceAccess(Guid userId, CancellationToken cancellationToken = default)
+    {
+        await _userService.HasMainResourceAccessAsync(userId, cancellationToken);
+        return Ok();
+    }
 }

@@ -192,4 +192,26 @@ public class UserService : IUserService
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task HasMainResourceAccessAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var user = await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
+        if (user==null)
+        {
+            throw new EntityNotFoundException("User", id);
+        }
+        
+        if (user.IsBlocked && user.BlockedUntil > DateTime.UtcNow)
+        {
+            throw new UserBlockedException($"User is blocked until {user.BlockedUntil}.");
+        }
+
+        var session =
+            await _userSessionService.GetActiveSessionByUserIdAsync(id, cancellationToken);
+        
+        if (session == null || !session.IsActive)
+        {
+            throw new UnauthorizedAccessException("Invalid or expired refresh token.");
+        }
+    }
 }

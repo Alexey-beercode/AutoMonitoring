@@ -14,4 +14,5 @@ public interface IUserService
     Task BlockUserAsync(BlockUserDTO blockUserDto, CancellationToken cancellationToken = default);
     Task DeleteAsync(string login, CancellationToken cancellationToken = default);
     Task UnblockUserAsync(Guid id, CancellationToken cancellationToken = default);
+    Task HasMainResourceAccessAsync(Guid id, CancellationToken cancellationToken = default);
 }

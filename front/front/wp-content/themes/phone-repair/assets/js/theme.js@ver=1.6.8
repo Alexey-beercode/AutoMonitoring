@@ -1,0 +1,210 @@
+var phone_repair = {};
+
+(function($) {
+	'use strict';
+
+	var isRtl = $('body').hasClass('rtl');
+
+	// object-fit fallback for MS browsers. For more info see:
+	//   https://medium.com/@primozcigler/neat-trick-for-css-object-fit-fallback-on-edge-and-other-browsers-afbc53bbb2c3
+	if (!Modernizr.objectfit) {
+		$('.js-post-image-container').each(function() {
+			var $container = $(this),
+				imgUrl = $container.find('img').prop('src');
+			if (imgUrl) {
+				$container.css('background-image', 'url(' + imgUrl + ')')
+					.addClass('compat-object-fit');
+			}
+		});
+	}
+
+	// Handle mobile menu toggling.
+	if ($('.js-navigation-bar').length) {
+		$('.js-navigation-bar').on('click', '.js-navigation-bar__mobile-menu-toggle', function(ev) {
+			var $menu = $(ev.delegateTarget).find('.js-navigation-bar__menu');
+			if ($menu.hasClass('is-closed')) {
+				$menu.stop(true, true).slideDown(200, function() {
+					$menu.removeClass('is-closed').css('display', '');
+				});
+			} else {
+				$menu.stop(true, true).slideUp(200, function() {
+					$menu.addClass('is-closed').css('display', '');
+				});
+			}
+		});
+	}
+
+	// Set up mobile menu submenu toggling.
+	(function() {
+		var $container    = $( '.primary-menu' );
+		var $toggleButton = $( '<button />', { 'class': 'primary-menu__sub-menu-toggle', 'aria-expanded': false } )
+			.append( $( '<span />', { 'class': 'primary-menu__sub-menu-toggle-icon' } ) )
+			.append( $( '<span />', { 'class': 'screen-reader-text', 'text': phonerepairScreenReaderText.expand } ) );
+
+		$container.find( '.primary-menu__item--has-sub-menu > a, .primary-menu__sub-menu-item--has-sub-menu > a' )
+			.filter(function() {
+				return $( this ).closest( '.primary-menu__sub-menu' ).length == 0;
+			})
+			.after( $toggleButton );
+
+		$container.find( '.primary-menu__sub-menu-toggle' ).on( 'click.phonerepair', function( event ) {
+			var $this = $( this );
+
+			event.preventDefault();
+			$this.toggleClass( 'is-toggled-on' );
+			$this.next( '.primary-menu__sub-menu' ).toggleClass( 'is-toggled-on' );
+			$this.attr( 'aria-expanded', $this.hasClass( 'is-toggled-on' ) );
+			$this.find( '.screen-reader-text' )
+				.text( $this.hasClass( 'is-toggled-on' ) ? phonerepairScreenReaderText.collapse : phonerepairScreenReaderText.expand );
+		});
+	})();
+
+	if ($('.js-post-carousel').length) {
+		var postCarouselNavText = ['<span class="ti-angle-left"></span>', '<span class="ti-angle-right"></span>'];
+		if (isRtl) {
+			postCarouselNavText.reverse();
+		}
+		var owlEqualizeHeights = function(carousel) {
+			var $carousel = $(carousel),
+				maxHeight = 0;
+			$carousel.find('.owl-item:not(.cloned)').height('auto').each(function() {
+				maxHeight = Math.max(maxHeight, $(this).height());
+			});
+			$carousel.find('.owl-item').height(maxHeight);
+		};
+
+		$('.js-post-carousel').each(function(index, element) {
+			var $element = $(element),
+				interval = $element.data('interval'),
+				config = {
+					items: 1,
+					margin: $element.hasClass('no-border') ? 30 : 0,
+					rtl: isRtl,
+					loop: true,
+					nav: true,
+					dots: false,
+					autoplay: interval > 0,
+					autoplayTimeout: interval,
+					autoplaySpeed: 800,
+					autoplayHoverPause: true,
+					navText: postCarouselNavText,
+					responsive: {
+						768: {
+							items: 2
+						},
+						970: {
+							items: 3
+						},
+					},
+					onInitialized: function(event) {
+						owlEqualizeHeights(event.target);
+						setTimeout(function() {
+							owlEqualizeHeights(event.target);
+						}, 100);
+					},
+					onResized: function(event) {
+						owlEqualizeHeights(event.target);
+					},
+				};
+			var $itemsContainer = $element.find('.js-post-carousel__items');
+			$itemsContainer.owlCarousel(config);
+			$itemsContainer.imagesLoaded().progress(function(instance, image) {
+				owlEqualizeHeights(instance.elements[0]);
+			});
+		});
+	}
+
+	if ($('.testimonials-carousel').length) {
+		var testimonialsNavText = ['<span class="ti-angle-left"></span>', '<span class="ti-angle-right"></span>'];
+		if (isRtl) {
+			testimonialsNavText.reverse();
+		}
+		$('.testimonials-carousel').owlCarousel({
+			items: 1,
+			margin: 30,
+			rtl: isRtl,
+			loop: true,
+			nav: true,
+			dots: false,
+			autoplay: true,
+			autoplayTimeout: 7000,
+			autoplayHoverPause: true,
+			autoplaySpeed: 800,
+			navText: testimonialsNavText,
+			responsive: {
+				970: {
+					items: 2,
+				}
+			}
+		});
+	}
+
+	var Shuffle = window.shuffle;
+
+	if ($('.js-post-grid').length) {
+		var disableResize = function(resize, wait) {
+			return function() {};
+		};
+
+		var delayedUpdate = function(update, delay) {
+			var timeoutID;
+
+			function callUpdate() {
+				timeoutID = 0;
+				update();
+			}
+			return function delayed() {
+				if (!timeoutID) {
+					timeoutID = setTimeout(callUpdate, delay);
+				}
+			};
+		};
+
+		$('.js-post-grid').each(function(index, element) {
+			var $element = $(element);
+			var itemsContainer = $element.find('.js-post-grid__items')[0];
+			var shuffle = new Shuffle(itemsContainer, {
+				itemSelector: '.js-post-grid__item',
+				throttle: disableResize,
+			});
+
+			// Handle filtering.
+			var $filters = $element.find('.js-post-grid__filters');
+			var $activeFilter = $filters.find('.is-active');
+			$filters.on('click', '.js-post-grid__filter', function(event) {
+				event.target.blur();
+				var $target = $(event.target);
+				if (!$target.hasClass('is-active')) {
+					$target.addClass('is-active');
+					$activeFilter.removeClass('is-active');
+					$activeFilter = $target;
+					shuffle.filter($target.data('group'));
+				}
+			});
+
+			$element.addClass('is-ready');
+
+			// Handle updates on window resize.
+			var update;
+			if ($element.data('layout-method') === 'grid') {
+				update = function() {
+					var $items = $element.find('.js-post-grid__item'),
+						maxHeight = 0;
+					$items.height('auto').each(function() {
+						maxHeight = Math.max(maxHeight, $(this).height());
+					});
+					$items.height(maxHeight);
+					shuffle.update();
+				};
+			} else {
+				update = function() {
+					shuffle.update();
+				};
+			}
+			imagesLoaded(itemsContainer).on('progress', update);
+			var updateWithDelay = delayedUpdate(update, 100);
+			updateWithDelay();
+			$(window).resize(updateWithDelay);
+		});
+	}
+}(jQuery));

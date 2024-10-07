@@ -1,0 +1,53 @@
+.login-section {
+    display: flex;
+    justify-content: center;
+    width: 300px;
+    margin: 50px auto;
+}
+
+.login__container {
+    width: 100%;
+}
+.login__innder {
+    width: 100%;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4cae4c;
+}
+
+.login__error {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+}

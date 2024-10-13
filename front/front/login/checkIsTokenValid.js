@@ -1,4 +1,4 @@
-const apiUrl = 'https://localhost:44316/api/auth';
+const apiUrl = 'http://localhost:5007/api/auth';
 
 const exitAndRedirect = () => {
     const userId = localStorage.getItem('userId');

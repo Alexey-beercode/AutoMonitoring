@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ Панель</title>
+    <link rel="stylesheet" href="./panel_style.css">
+    <script type='text/javascript' src="../login/checkIsTokenValid.js"></script>
+</head>
+<body>
+    <div class="exit-bar">
+        <button class="exit-bar_button" onclick="exitAndRedirect()">Выход</button>
+    </div>
+
+    <h1>Административная панель</h1>
+    
+    <form id="createUserForm" autocomplete="off">
+        <div>
+            <label for="username">Логин:</label>
+            <input type="text" id="username" placeholder="Логин" required autocomplete="off">
+        </div>
+        <div>
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" placeholder="Пароль" required autocomplete="new-password">
+        </div>
+        <button type="submit">Создать пользователя</button>
+    </form>
+
+    <div id="userList">
+        <h2>Список пользователей:</h2>
+        
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Логин</th>
+                    <th>Пароль</th>
+                    <th>Состояние</th>
+                    <th>Устройство</th>
+                    <th>Последняя активность</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="users"></tbody>
+        </table>
+    </div>
+    
+    <script type='text/javascript' src="./panel.js"></script>
+</body>
+</html>

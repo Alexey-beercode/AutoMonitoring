@@ -38,9 +38,6 @@
 	var password_value = $("#password_field")[0].value;
 	
 	if ( login_value && password_value ) {
-		sessionStorage.setItem("good_auth", 1);
-
-	document.location.href = "https://arguv.com/ar_ba/custom/arguv.com/storage/truck_v21.06.24/content.html";
 	
 	$.post('php/server.php', {check_data: 1, login: login_value, password: password_value}, function (data) {
   

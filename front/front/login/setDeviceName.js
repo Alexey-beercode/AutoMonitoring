@@ -1,4 +1,4 @@
-const fpPromise = import('https://openfpcdn.io/fingerprintjs/v4')
+const fpPromise = import('./fp.min.js')
     .then(FingerprintJS => FingerprintJS.load())
 
 fpPromise

@@ -20,7 +20,7 @@ public static class WebApplicationExtension
         
         app.UseCors(builder =>
         {
-            builder.WithOrigins("http://localhost:5500") 
+            builder.WithOrigins("http://127.0.0.1:5500") 
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();

@@ -8,7 +8,8 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     const errorElement = document.querySelector('.login__error');
 
     // Замените URL на ваш адрес API
-    const apiUrl = 'https://localhost:44316/api/auth/login';
+    const apiUrl = 'http://localhost:5007/api/auth/login';
+    const apiBaseUrl = 'http://localhost:5007/api/admin/user';
 
     fetch(apiUrl, {
         method: 'POST',
@@ -33,6 +34,18 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         localStorage.setItem('refreshToken', data.refreshToken);
         localStorage.setItem('userId', data.userId);
 
-        window.location.href = '/truck_v21.06.24/content.html'; // Замените на вашу страницу
+        fetch(`${apiBaseUrl}/getAll`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${data.accessToken}`
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = '../admin-panel/admin_panel.html';
+            } else {
+                window.location.href = '/truck_v21.06.24/content.html'; // Замените на вашу страницу
+            }
+        });
     })
 });

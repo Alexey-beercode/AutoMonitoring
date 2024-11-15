@@ -8,6 +8,7 @@ public static class WebApplicationExtension
     {
         if (app.Environment.IsDevelopment())
         {
+            Console.WriteLine("Yes");
             app.UseSwagger();
             app.UseSwaggerUI();
         }

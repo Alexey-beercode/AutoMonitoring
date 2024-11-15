@@ -45,6 +45,7 @@ public class UserService : IUserService
 
         await _unitOfWork.Users.CreateAsync(user, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
         await _roleService.SetRoleToUserAsync(new UserRoleModel() { RoleId = baseRole.Id, UserId = user.Id },
             cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -141,6 +142,7 @@ public class UserService : IUserService
         session.RefreshTokenExpiryTime =
             DateTime.UtcNow.AddDays(_configuration.GetSection("Jwt:RefreshTokenExpirationDays").Get<int>());
         session.LastActive = DateTime.UtcNow;
+        
         _unitOfWork.UserSessions.Update(session);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

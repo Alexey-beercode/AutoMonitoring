@@ -111,7 +111,7 @@ public static class WebApplicationBuilderExtension
         string? connectionString = builder.Configuration.GetConnectionString("ConnectionString");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseNpgsql(connectionString);
+            options.UseSqlServer(connectionString);
         });
     }
 
